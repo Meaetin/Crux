@@ -1,0 +1,163 @@
+@import "tailwindcss";
+
+@variant dark (&:where(.dark, .dark *));
+
+@theme {
+  /* Surface + foreground tokens resolve to the runtime CSS vars below,
+     so light/dark swap by toggling the .dark class on <html>. */
+  --color-bg: var(--ui-bg);
+  --color-surface-1: var(--ui-surface-1);
+  --color-surface-2: var(--ui-surface-2);
+  --color-surface-3: var(--ui-surface-3);
+  --color-line: var(--ui-line);
+  --color-line-strong: var(--ui-line-strong);
+
+  --color-fg: var(--ui-fg);
+  --color-fg-muted: var(--ui-fg-muted);
+  --color-fg-faint: var(--ui-fg-faint);
+
+  /* Brand — single decisive chalk-red accent. Use sparingly:
+     primary button, active nav, streak signature, focus ring. */
+  --color-brand: var(--ui-brand);
+  --color-brand-strong: var(--ui-brand-strong);
+  --color-brand-deep: var(--ui-brand-deep);
+  --color-on-primary: var(--ui-on-primary);
+
+  /* Semantic */
+  --color-success: var(--ui-success);
+  --color-danger: var(--ui-danger);
+
+  /* Streak — the signature daily metric. Tonal gradient, not fire. */
+  --color-streak: var(--ui-brand);
+  --color-streak-hot: var(--ui-brand-strong);
+
+  /* Frozen — a streak day saved by spending a freeze.
+     Cool slate, distinct from the warm chalk-red brand. */
+  --color-frozen: var(--ui-frozen);
+
+  /* Categories — muted earth tones, tuned per mode for legibility */
+  --color-strength: var(--ui-cat-strength);
+  --color-cardio: var(--ui-cat-cardio);
+  --color-flexibility: var(--ui-cat-flexibility);
+  --color-sports: var(--ui-cat-sports);
+  --color-custom: var(--ui-fg-muted);
+
+  /* Typography — Inter for everything; tabular numerals carry the UI */
+  --font-sans: "Inter", ui-sans-serif, system-ui, sans-serif;
+  --font-display: "Inter", ui-sans-serif, system-ui, sans-serif;
+
+  /* Radius — quietly geometric */
+  --radius-md: 0.25rem;
+  --radius-lg: 0.375rem;
+  --radius-xl: 0.625rem;
+}
+
+/* Light: limestone / chalk */
+:root {
+  --ui-bg: #f5f1ea;
+  --ui-surface-1: #ece6da;
+  --ui-surface-2: #e0d9c8;
+  --ui-surface-3: #d4ccb6;
+  --ui-line: #c2b9a3;
+  --ui-line-strong: #a89e85;
+
+  --ui-fg: #0a0908;
+  --ui-fg-muted: #4a4845;
+  --ui-fg-faint: #8a8580;
+
+  --ui-brand: #c73e1d;
+  --ui-brand-strong: #a33218;
+  --ui-brand-deep: #5a1f10;
+  --ui-on-primary: #f5f1ea;
+
+  --ui-success: #3d6948;
+  --ui-danger: #a8351f;
+
+  --ui-frozen: #4a6b7a;
+
+  --ui-cat-strength: #8e3f1f;
+  --ui-cat-cardio: #7a5320;
+  --ui-cat-flexibility: #5c6b3d;
+  --ui-cat-sports: #3d6948;
+
+  color-scheme: light;
+}
+
+/* Dark: basalt / stone */
+:root.dark {
+  --ui-bg: #1c1b19;
+  --ui-surface-1: #25231f;
+  --ui-surface-2: #2e2b25;
+  --ui-surface-3: #38342c;
+  --ui-line: #4a4640;
+  --ui-line-strong: #635d55;
+
+  --ui-fg: #f5f1ea;
+  --ui-fg-muted: #a8a299;
+  --ui-fg-faint: #6b665e;
+
+  --ui-brand: #d6512a;
+  --ui-brand-strong: #b03e1d;
+  --ui-brand-deep: #4a1a0e;
+  --ui-on-primary: #1c1b19;
+
+  --ui-success: #6b9876;
+  --ui-danger: #d65a3e;
+
+  --ui-frozen: #7a9aac;
+
+  --ui-cat-strength: #d68a5e;
+  --ui-cat-cardio: #d1a565;
+  --ui-cat-flexibility: #a4b27c;
+  --ui-cat-sports: #86a888;
+
+  color-scheme: dark;
+}
+
+html,
+body {
+  height: 100%;
+  overscroll-behavior: none;
+  background-color: var(--color-bg);
+  color: var(--color-fg);
+  font-family: var(--font-sans);
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  html {
+    scroll-behavior: smooth;
+  }
+}
+
+/* Tabular figures for numeric display — opt in via .tnum */
+.tnum {
+  font-variant-numeric: tabular-nums;
+  font-feature-settings: "tnum";
+}
+
+/* Focus ring — chalk-red on whatever background */
+*:focus-visible {
+  outline: 2px solid var(--color-brand);
+  outline-offset: 2px;
+  border-radius: 4px;
+}
+
+/* Tap-press primitive — apply via class="press-feedback" */
+.press-feedback {
+  transition: transform 100ms ease-out;
+}
+.press-feedback:active {
+  transform: scale(0.96);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+  }
+}
