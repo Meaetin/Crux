@@ -1,14 +1,5 @@
 import { createClient } from '@supabase/supabase-js';
-import { env } from '$env/dynamic/public';
-
-const url = env.PUBLIC_SUPABASE_URL;
-const anonKey = env.PUBLIC_SUPABASE_ANON_KEY;
-
-if (!url || !anonKey) {
-  throw new Error(
-    'Missing Supabase env vars. Set PUBLIC_SUPABASE_URL and PUBLIC_SUPABASE_ANON_KEY in .env'
-  );
-}
+import { PUBLIC_SUPABASE_URL, PUBLIC_SUPABASE_ANON_KEY } from '$env/static/public';
 
 const REMEMBER_KEY = 'sb-remember';
 
@@ -50,7 +41,7 @@ const rememberStorage = {
   }
 };
 
-export const supabase = createClient(url, anonKey, {
+export const supabase = createClient(PUBLIC_SUPABASE_URL, PUBLIC_SUPABASE_ANON_KEY, {
   auth: {
     persistSession: true,
     autoRefreshToken: true,
