@@ -13,6 +13,7 @@
     cancelStreakReminder
   } from '$lib/notifications/streak-reminder';
   import { syncState } from '$lib/sync/engine.svelte';
+  import PageHeader from '$lib/components/PageHeader.svelte';
 
   let signingOut = $state(false);
   let permissionState = $state(notificationPermission());
@@ -89,8 +90,9 @@
 </script>
 
 <section class="settings-shell">
-  <h1 class="settings-title">Settings</h1>
+  <PageHeader title="Settings" />
 
+  <div class="settings-content">
   <div class="settings-section">
     <h2 class="settings-section-title">Streak reminders</h2>
     <div class="settings-card">
@@ -151,6 +153,7 @@
       <span class="settings-sync-label">{syncLabel}</span>
     </div>
   </div>
+  </div>
 </section>
 
 <style>
@@ -158,13 +161,12 @@
     display: flex;
     flex-direction: column;
     gap: 22px;
-    padding: 20px 16px;
   }
-  .settings-title {
-    font-family: var(--font-display);
-    font-size: 1.625rem;
-    font-weight: 700;
-    letter-spacing: 0.01em;
+  .settings-content {
+    padding: 0 16px 16px;
+    display: flex;
+    flex-direction: column;
+    gap: 22px;
   }
 
   .settings-section {

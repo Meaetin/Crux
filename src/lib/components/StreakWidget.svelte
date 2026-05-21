@@ -186,7 +186,7 @@
     display: flex;
     align-items: center;
     gap: 12px;
-    margin-top: 36px;
+    margin-top: 20px;
   }
   .streak-hero-today-dots {
     display: inline-flex;
@@ -284,7 +284,8 @@
     min-height: 40px;
     padding: 0 14px;
     background: transparent;
-    border: 1px solid color-mix(in srgb, var(--color-frozen) 35%, var(--color-line));
+    border: 1px solid
+      color-mix(in srgb, var(--color-frozen) 35%, var(--color-line));
     color: var(--color-frozen);
     border-radius: var(--radius-md);
     font-family: inherit;

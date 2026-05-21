@@ -19,6 +19,7 @@
   import Calendar from '$lib/components/Calendar.svelte';
   import Fab from '$lib/components/Fab.svelte';
   import Icon from '$lib/components/Icon.svelte';
+  import PageHeader from '$lib/components/PageHeader.svelte';
 
   let currentDate = $state(todayLocal());
   let weekStart = $state(startOfWeek(todayLocal()));
@@ -89,159 +90,138 @@
 </script>
 
 <section class="workouts-shell">
-  <header class="workouts-header">
-    <div class="workouts-title-row">
-      <h1 class="workouts-title">Workouts</h1>
-      <div class="workouts-title-actions">
-        {#if !isToday}
-          <button
-            type="button"
-            class="workouts-today-pill press-feedback"
-            onclick={jumpToToday}
-          >
-            Today
-          </button>
-        {/if}
+  <PageHeader title="Workouts">
+    {#snippet actions()}
+      {#if !isToday}
         <button
           type="button"
-          class="workouts-calendar-toggle press-feedback"
-          onclick={() => (calendarOpen = !calendarOpen)}
-          aria-expanded={calendarOpen}
-          aria-label="Open calendar"
+          class="workouts-today-pill press-feedback"
+          onclick={jumpToToday}
         >
-          <Icon name="calendar" size={20} />
+          Today
+        </button>
+      {/if}
+      <button
+        type="button"
+        class="workouts-calendar-toggle press-feedback"
+        onclick={() => (calendarOpen = !calendarOpen)}
+        aria-expanded={calendarOpen}
+        aria-label="Open calendar"
+      >
+        <Icon name="calendar" size={20} />
+      </button>
+    {/snippet}
+
+    {#snippet below()}
+      <div class="workouts-week-strip">
+        <button
+          type="button"
+          class="workouts-week-nav press-feedback"
+          onclick={goPrevWeek}
+          aria-label="Previous week"
+        >
+          <Icon name="chevron-right" size={18} class="workouts-week-nav-flip" />
+        </button>
+
+        <div class="workouts-week-days">
+          <div class="workouts-week-range tnum" aria-hidden="true">
+            {weekRangeLabel(weekStart)}
+          </div>
+          <div class="workouts-week-grid">
+            {#each visibleWeek as iso (iso)}
+              {@const isFuture = iso > today}
+              {@const isSelected = iso === currentDate}
+              {@const isCurrentToday = iso === today}
+              {@const hasWorkout = workoutDateSet.has(iso)}
+              <button
+                type="button"
+                class="workouts-week-day press-feedback"
+                class:workouts-week-day-selected={isSelected}
+                class:workouts-week-day-today={isCurrentToday && !isSelected}
+                class:workouts-week-day-future={isFuture}
+                disabled={isFuture}
+                onclick={() => selectDate(iso)}
+                aria-label={`${dayName(iso)}, ${shortDate(iso)}`}
+                aria-pressed={isSelected}
+              >
+                <span class="workouts-week-day-letter">{weekdayLetter(iso)}</span>
+                <span class="workouts-week-day-number tnum">{dayOfMonth(iso)}</span>
+                <span
+                  class="workouts-week-day-dot"
+                  class:workouts-week-day-dot-visible={hasWorkout}
+                  aria-hidden="true"
+                ></span>
+              </button>
+            {/each}
+          </div>
+        </div>
+
+        <button
+          type="button"
+          class="workouts-week-nav press-feedback"
+          onclick={goNextWeek}
+          disabled={!canGoNextWeek}
+          aria-label="Next week"
+        >
+          <Icon name="chevron-right" size={18} />
         </button>
       </div>
-    </div>
 
-    <div class="workouts-week-strip">
-      <button
-        type="button"
-        class="workouts-week-nav press-feedback"
-        onclick={goPrevWeek}
-        aria-label="Previous week"
-      >
-        <Icon name="chevron-right" size={18} class="workouts-week-nav-flip" />
-      </button>
-
-      <div class="workouts-week-days">
-        <div class="workouts-week-range tnum" aria-hidden="true">
-          {weekRangeLabel(weekStart)}
+      {#if calendarOpen}
+        <div class="workouts-calendar-drawer" transition:slide={{ duration: 160 }}>
+          <Calendar value={currentDate} max={today} onSelect={handlePickDate} />
         </div>
-        <div class="workouts-week-grid">
-          {#each visibleWeek as iso (iso)}
-            {@const isFuture = iso > today}
-            {@const isSelected = iso === currentDate}
-            {@const isCurrentToday = iso === today}
-            {@const hasWorkout = workoutDateSet.has(iso)}
-            <button
-              type="button"
-              class="workouts-week-day press-feedback"
-              class:workouts-week-day-selected={isSelected}
-              class:workouts-week-day-today={isCurrentToday && !isSelected}
-              class:workouts-week-day-future={isFuture}
-              disabled={isFuture}
-              onclick={() => selectDate(iso)}
-              aria-label={`${dayName(iso)}, ${shortDate(iso)}`}
-              aria-pressed={isSelected}
-            >
-              <span class="workouts-week-day-letter">{weekdayLetter(iso)}</span>
-              <span class="workouts-week-day-number tnum">{dayOfMonth(iso)}</span>
-              <span
-                class="workouts-week-day-dot"
-                class:workouts-week-day-dot-visible={hasWorkout}
-                aria-hidden="true"
-              ></span>
-            </button>
-          {/each}
-        </div>
-      </div>
+      {/if}
+    {/snippet}
+  </PageHeader>
 
-      <button
-        type="button"
-        class="workouts-week-nav press-feedback"
-        onclick={goNextWeek}
-        disabled={!canGoNextWeek}
-        aria-label="Next week"
-      >
-        <Icon name="chevron-right" size={18} />
-      </button>
-    </div>
+  <div class="workouts-content">
 
-    {#if calendarOpen}
-      <div class="workouts-calendar-drawer" transition:slide={{ duration: 160 }}>
-        <Calendar value={currentDate} max={today} onSelect={handlePickDate} />
+    {#if !$recentWorkoutsLive}
+      <div class="workouts-loading" aria-hidden="true">
+        <div class="workouts-skeleton-row"></div>
+        <div class="workouts-skeleton-row"></div>
       </div>
+    {:else if dayWorkouts.length === 0}
+      <div class="workouts-day-empty">
+        <p class="workouts-day-empty-title">No workouts logged</p>
+        <p class="workouts-day-empty-body">
+          Tap the button below to log one for {dayName(currentDate).toLowerCase()}.
+        </p>
+      </div>
+    {:else}
+      <ul class="workouts-day-list">
+        {#each dayWorkouts as workout (workout.id)}
+          {@const exercise = exerciseFor(workout)}
+          <li class="workouts-day-list-row">
+            <WorkoutCard
+              {workout}
+              {exercise}
+              onEdit={() => goto(`/workouts/new?edit=${workout.id}`)}
+              onDelete={() => deleteWorkout(workout.id)}
+            />
+          </li>
+        {/each}
+      </ul>
     {/if}
-  </header>
-
-  {#if !$recentWorkoutsLive}
-    <div class="workouts-loading" aria-hidden="true">
-      <div class="workouts-skeleton-row"></div>
-      <div class="workouts-skeleton-row"></div>
-    </div>
-  {:else if dayWorkouts.length === 0}
-    <div class="workouts-day-empty">
-      <p class="workouts-day-empty-title">No workouts logged</p>
-      <p class="workouts-day-empty-body">
-        Tap the button below to log one for {dayName(currentDate).toLowerCase()}.
-      </p>
-    </div>
-  {:else}
-    <ul class="workouts-day-list">
-      {#each dayWorkouts as workout (workout.id)}
-        {@const exercise = exerciseFor(workout)}
-        <li class="workouts-day-list-row">
-          <WorkoutCard
-            {workout}
-            {exercise}
-            onEdit={() => goto(`/workouts/new?edit=${workout.id}`)}
-            onDelete={() => deleteWorkout(workout.id)}
-          />
-        </li>
-      {/each}
-    </ul>
-  {/if}
+  </div>
 </section>
 
 <Fab onclick={() => goto(`/workouts/new?date=${currentDate}`)} label="Send" />
 
 <style>
   .workouts-shell {
-    padding: 28px 16px 16px;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+  }
+  .workouts-content {
+    padding: 0 16px 16px;
     display: flex;
     flex-direction: column;
     gap: 20px;
   }
 
-  .workouts-header {
-    display: flex;
-    flex-direction: column;
-    gap: 18px;
-  }
-
-  .workouts-title-row {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    gap: 12px;
-    min-height: 40px;
-  }
-  .workouts-title {
-    font-family: var(--font-display);
-    font-weight: 700;
-    font-size: 1.5rem;
-    line-height: 1;
-    color: var(--color-fg);
-    text-transform: uppercase;
-    letter-spacing: 0.02em;
-  }
-
-  .workouts-title-actions {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-  }
   .workouts-today-pill {
     height: 32px;
     padding: 0 14px;

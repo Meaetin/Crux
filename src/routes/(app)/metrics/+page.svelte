@@ -12,6 +12,7 @@
   import PrimaryButton from '$lib/components/PrimaryButton.svelte';
   import ConfirmModal from '$lib/components/ConfirmModal.svelte';
   import GradeChip from '$lib/components/GradeChip.svelte';
+  import PageHeader from '$lib/components/PageHeader.svelte';
   import HeightPrompt from '$lib/components/HeightPrompt.svelte';
   import MetricEntryForm from '$lib/components/MetricEntryForm.svelte';
   import WeightCalendar from '$lib/components/WeightCalendar.svelte';
@@ -89,13 +90,15 @@
 </script>
 
 <section class="metrics-shell">
-  <header class="metrics-header">
-    <h1 class="metrics-title">Metrics</h1>
-    <button type="button" class="metrics-unit-toggle press-feedback" onclick={toggleUnits}>
-      {unitSystem === 'metric' ? 'kg / cm' : 'lb / ft'}
-    </button>
-  </header>
+  <PageHeader title="Metrics">
+    {#snippet actions()}
+      <button type="button" class="metrics-unit-toggle press-feedback" onclick={toggleUnits}>
+        {unitSystem === 'metric' ? 'kg / cm' : 'lb / ft'}
+      </button>
+    {/snippet}
+  </PageHeader>
 
+  <div class="metrics-content">
   <!-- Body weight -->
   <section class="metrics-section">
     <div class="metrics-section-header">
@@ -165,6 +168,7 @@
       </ul>
     {/if}
   </section>
+  </div>
 </section>
 
 <Sheet
@@ -217,27 +221,15 @@
 
 <style>
   .metrics-shell {
-    padding: 28px 16px 16px;
     display: flex;
     flex-direction: column;
     gap: 28px;
   }
-
-  .metrics-header {
+  .metrics-content {
+    padding: 0 16px 16px;
     display: flex;
-    align-items: center;
-    justify-content: space-between;
-    gap: 12px;
-    min-height: 40px;
-  }
-  .metrics-title {
-    font-family: var(--font-display);
-    font-weight: 700;
-    font-size: 1.5rem;
-    line-height: 1;
-    color: var(--color-fg);
-    text-transform: uppercase;
-    letter-spacing: 0.02em;
+    flex-direction: column;
+    gap: 28px;
   }
   .metrics-unit-toggle {
     height: 32px;

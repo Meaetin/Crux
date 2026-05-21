@@ -8,6 +8,7 @@
   import PrimaryButton from '$lib/components/PrimaryButton.svelte';
   import ConfirmModal from '$lib/components/ConfirmModal.svelte';
   import Icon from '$lib/components/Icon.svelte';
+  import PageHeader from '$lib/components/PageHeader.svelte';
 
   let sheetOpen = $state(false);
   let editing = $state<Exercise | null>(null);
@@ -57,43 +58,41 @@
 </script>
 
 <section class="exercises-shell">
-  <header class="exercises-header">
-    <div class="exercises-header-titles">
-      <h1 class="exercises-title">Exercises</h1>
-      <p class="exercises-subtitle tnum">
-        {$exercisesLive?.length ?? 0} in library
-      </p>
-    </div>
-  </header>
+  <PageHeader
+    title="Exercises"
+    subtitle={$exercisesLive ? `${$exercisesLive.length} in library` : undefined}
+  />
 
-  {#if !$exercisesLive}
-    <div class="exercises-loading" aria-hidden="true">
-      <div class="exercises-skeleton-row"></div>
-      <div class="exercises-skeleton-row"></div>
-      <div class="exercises-skeleton-row"></div>
-    </div>
-  {:else if $exercisesLive.length === 0}
-    <div class="exercises-empty-state">
-      <div class="exercises-empty-icon-container" aria-hidden="true">
-        <Icon name="dumbbell" size={36} strokeWidth={1.5} />
+  <div class="exercises-content">
+    {#if !$exercisesLive}
+      <div class="exercises-loading" aria-hidden="true">
+        <div class="exercises-skeleton-row"></div>
+        <div class="exercises-skeleton-row"></div>
+        <div class="exercises-skeleton-row"></div>
       </div>
-      <h2 class="exercises-empty-title">Build your library</h2>
-      <p class="exercises-empty-body">
-        Add the exercises you do. They'll show up in workout logging and history.
-      </p>
-      <div class="exercises-empty-action">
-        <PrimaryButton onclick={openCreate}>Add your first exercise</PrimaryButton>
+    {:else if $exercisesLive.length === 0}
+      <div class="exercises-empty-state">
+        <div class="exercises-empty-icon-container" aria-hidden="true">
+          <Icon name="dumbbell" size={36} strokeWidth={1.5} />
+        </div>
+        <h2 class="exercises-empty-title">Build your library</h2>
+        <p class="exercises-empty-body">
+          Add the exercises you do. They'll show up in workout logging and history.
+        </p>
+        <div class="exercises-empty-action">
+          <PrimaryButton onclick={openCreate}>Add your first exercise</PrimaryButton>
+        </div>
       </div>
-    </div>
-  {:else}
-    <ul class="exercises-list">
-      {#each $exercisesLive as exercise (exercise.id)}
-        <li class="exercises-list-row">
-          <ExerciseListItem {exercise} onclick={() => openEdit(exercise)} />
-        </li>
-      {/each}
-    </ul>
-  {/if}
+    {:else}
+      <ul class="exercises-list">
+        {#each $exercisesLive as exercise (exercise.id)}
+          <li class="exercises-list-row">
+            <ExerciseListItem {exercise} onclick={() => openEdit(exercise)} />
+          </li>
+        {/each}
+      </ul>
+    {/if}
+  </div>
 </section>
 
 <Fab onclick={openCreate} label="Add exercise" />
@@ -132,33 +131,15 @@
 
 <style>
   .exercises-shell {
-    padding: 20px 16px 16px;
     display: flex;
     flex-direction: column;
     gap: 18px;
   }
-
-  .exercises-header {
-    display: flex;
-    align-items: flex-end;
-    justify-content: space-between;
-    gap: 12px;
-  }
-  .exercises-header-titles {
+  .exercises-content {
+    padding: 0 16px 16px;
     display: flex;
     flex-direction: column;
-    gap: 2px;
-  }
-  .exercises-title {
-    font-family: var(--font-display);
-    font-weight: 700;
-    font-size: 2rem;
-    line-height: 1;
-    letter-spacing: 0.005em;
-  }
-  .exercises-subtitle {
-    font-size: 0.8125rem;
-    color: var(--color-fg-muted);
+    gap: 18px;
   }
 
   .exercises-list {
