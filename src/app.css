@@ -125,6 +125,34 @@ body {
   text-rendering: optimizeLegibility;
 }
 
+/* Installed-PWA safe area: when the app is launched standalone (iOS Add-to-
+   Home-Screen, Android PWA, desktop installs), the OS status bar / Dynamic
+   Island overlays the viewport because we set apple-mobile-web-app-status-
+   bar-style="black-translucent" in app.html. Reclaim that space here.
+   In a normal browser tab none of these media queries match, so the layout
+   is unchanged. */
+@media (display-mode: standalone),
+       (display-mode: fullscreen),
+       (display-mode: minimal-ui),
+       (display-mode: window-controls-overlay) {
+  .app-shell {
+    padding-top: env(safe-area-inset-top);
+  }
+  .auth-shell {
+    padding-top: calc(32px + env(safe-area-inset-top));
+  }
+}
+
+/* Legacy iOS Safari (pre-iOS 13) standalone detector. Harmless on modern
+   iOS — older Safari ignores the display-mode media query. */
+@supports (-webkit-touch-callout: none) {
+  @media (display-mode: standalone) {
+    .app-shell {
+      padding-top: env(safe-area-inset-top);
+    }
+  }
+}
+
 @media (prefers-reduced-motion: no-preference) {
   html {
     scroll-behavior: smooth;

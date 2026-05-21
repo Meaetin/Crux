@@ -10,7 +10,6 @@
   let showPassword = $state(false);
   let submitting = $state(false);
   let error = $state<string | null>(null);
-  let info = $state<string | null>(null);
 
   const checks = $derived(checkPassword(password));
   const passwordsMatch = $derived(
@@ -32,10 +31,10 @@
 
     submitting = true;
     error = null;
-    info = null;
 
+    const trimmedEmail = email.trim();
     const { data, error: authError } = await supabase.auth.signUp({
-      email: email.trim(),
+      email: trimmedEmail,
       password,
       options: {
         emailRedirectTo: `${window.location.origin}/login`
@@ -50,7 +49,7 @@
     }
 
     if (!data.session) {
-      info = 'Check your inbox to confirm your email, then sign in.';
+      await goto(`/verify-email?email=${encodeURIComponent(trimmedEmail)}`);
       return;
     }
 
@@ -142,9 +141,6 @@
 
   {#if error}
     <p class="auth-error" role="alert">{error}</p>
-  {/if}
-  {#if info}
-    <p class="auth-info" role="status">{info}</p>
   {/if}
 
   <PrimaryButton type="submit" loading={submitting} disabled={!canSubmit}>
@@ -283,14 +279,6 @@
     background: color-mix(in srgb, var(--color-danger) 12%, transparent);
     border: 1px solid color-mix(in srgb, var(--color-danger) 40%, transparent);
     color: var(--color-danger);
-    padding: 10px 12px;
-    border-radius: var(--radius-md);
-    font-size: 0.875rem;
-  }
-  .auth-info {
-    background: color-mix(in srgb, var(--color-success) 12%, transparent);
-    border: 1px solid color-mix(in srgb, var(--color-success) 40%, transparent);
-    color: var(--color-success);
     padding: 10px 12px;
     border-radius: var(--radius-md);
     font-size: 0.875rem;
